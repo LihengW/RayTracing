@@ -5,18 +5,23 @@ class Ray
 {
 public:
 	Ray(const glm::vec3& origin, const glm::vec3& dir)
-		:origin(origin), dir(dir)
+		:m_Origin(origin)
 	{
-		;
+		m_Dir = glm::normalize(dir);
 	}
 
-	glm::vec3 look_at(float dist)
+	inline glm::vec3 look_at(float dist) const
 	{
-		return origin + dist * dir;
+		return m_Origin + dist * m_Dir;
 	}
+
+
+	inline const glm::vec3& GetOrigin() const { return m_Origin; };
+	inline const glm::vec3& GetDir() const { return m_Dir; }
 
 private:
-	glm::vec3 origin;
-	glm::vec3 dir;
+	glm::vec3 m_Origin;
+	glm::vec3 m_Dir;
 
 };
+

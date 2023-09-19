@@ -21,6 +21,12 @@
     <ClCompile Include="src\Picture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\PerspectiveCamera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Ray.h">
@@ -30,6 +36,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\main.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PerspectiveCamera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Objects.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

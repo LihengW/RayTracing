@@ -130,10 +130,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Objects.cpp" />
+    <ClCompile Include="src\PerspectiveCamera.cpp" />
     <ClCompile Include="src\Picture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\Objects.h" />
+    <ClInclude Include="src\PerspectiveCamera.h" />
     <ClInclude Include="src\Picture.h" />
     <ClInclude Include="src\Ray.h" />
   </ItemGroup>
