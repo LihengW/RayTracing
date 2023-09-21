@@ -2,7 +2,7 @@
 
 a RayTracing project created by Liheng. The final target is to build a physical based renderer.
 
-![output.png](EasyRayTracing\assets\output.png)
+[output.png](EasyRayTracing\assets\output.png)
 
 
 
