@@ -18,7 +18,7 @@ void Picture::modify(int x, int y, glm::vec3 rgb)
 
 void Picture::modify(int x, int y, glm::vec4 rgba)
 {
-	modify(x, y, rgba.r*255, rgba.g*255, rgba.b*255, rgba.a*255);
+	modify(x, y, Utility::LineartoGamma(rgba.r)*255.0f, Utility::LineartoGamma(rgba.g) * 255.0f, Utility::LineartoGamma(rgba.b) * 255.0f, rgba.a*255);
 }
 
 void Picture::modify(int x, int y, unsigned int r, unsigned int g, unsigned int b, unsigned int alpha)

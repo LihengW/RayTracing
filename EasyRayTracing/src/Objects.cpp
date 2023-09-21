@@ -2,9 +2,15 @@
 
 
 Sphere::Sphere(const glm::vec3& origin, float radius)
-	:m_Origin(origin), m_Radius(radius)
+	:m_Origin(origin), m_Radius(radius), m_Material()
 {
 	;
+}
+
+Sphere::Sphere(std::shared_ptr<Material> material, const glm::vec3& origin, float radius)
+    :m_Origin(origin), m_Radius(radius), m_Material(material)
+{
+    ;
 }
 
 bool Sphere::hit(const Ray& ray, HitRecord& rec, float t_min, float t_max) const
@@ -22,6 +28,9 @@ bool Sphere::hit(const Ray& ray, HitRecord& rec, float t_min, float t_max) const
             rec.t = t;
             rec.position = ray.look_at(t);
             rec.normal = glm::normalize(rec.position - m_Origin);
+            rec.color = m_Color;
+            rec.mat_ptr = m_Material;
+            if (glm::dot(rec.normal, ray.GetDir()) < 0) rec.front_face = true;
             hit = true;
         }
     }
@@ -40,6 +49,9 @@ bool Sphere::hit(const Ray& ray, HitRecord& rec, float t_min, float t_max) const
             rec.t = t;
             rec.position = ray.look_at(t);
             rec.normal = glm::normalize(rec.position - m_Origin);
+            rec.color = m_Color;
+            rec.mat_ptr = m_Material;
+            if (glm::dot(rec.normal, ray.GetDir()) < 0) rec.front_face = true;
             hit = true;
         }
     }

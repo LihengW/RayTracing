@@ -3,6 +3,7 @@
 #define __STDC_LIB_EXT1__
 
 #include <string>
+#include "utility.h"
 #include "vendor/glm/glm/glm.hpp"
 
 class Picture

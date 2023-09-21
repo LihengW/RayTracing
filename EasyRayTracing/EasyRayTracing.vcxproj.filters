@@ -27,6 +27,18 @@
     <ClCompile Include="src\Objects.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\utility.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ray.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Materials.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Ray.h">
@@ -42,6 +54,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Objects.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Materials.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

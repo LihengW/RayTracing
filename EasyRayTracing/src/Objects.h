@@ -1,15 +1,9 @@
 #pragma once
 #include "Ray.h"
+#include "utility.h"
+#include "Materials.h"
 #include <vector>
 #include <memory>
-
-struct HitRecord
-{
-	glm::vec3 position{ 0.0f, 0.0f, 0.0f };
-	glm::vec3 normal{ 0.0f, 0.0f, 0.0f };
-	float t = std::numeric_limits<float>::max();
-};
-
 
 class Object
 {
@@ -33,7 +27,8 @@ private:
 class Sphere : public Object
 {
 public:
-	Sphere(const glm::vec3& origin, float radius);
+	Sphere(const glm::vec3& origin = {0.0f, 0.0f , 0.0f}, float radius = 0.0f);
+	Sphere(std::shared_ptr<Material> material, const glm::vec3& origin = {0.0f, 0.0f , 0.0f}, float radius = 1.0f);
 
 	inline const glm::vec3& GetOrigin() { return m_Origin; };
 	inline const float& GetRadius() { return m_Radius; }
@@ -42,5 +37,7 @@ public:
 
 private:
 	glm::vec3 m_Origin;
+	glm::vec3 m_Color;
+	std::shared_ptr<Material> m_Material;
 	float m_Radius;
 };
