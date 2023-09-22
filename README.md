@@ -2,7 +2,7 @@
 
 a RayTracing project created by Liheng. The final target is to build a physical based renderer.
 
-![output.png](F:\CppSerials\EasyRayTracing\EasyRayTracing\assets\output.png)
+![image](EasyRayTracing/assets/output.png)
 
 
 
