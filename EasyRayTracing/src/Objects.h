@@ -37,7 +37,6 @@ public:
 
 private:
 	glm::vec3 m_Origin;
-	glm::vec3 m_Color;
 	std::shared_ptr<Material> m_Material;
 	float m_Radius;
 };

@@ -28,7 +28,7 @@ bool Sphere::hit(const Ray& ray, HitRecord& rec, float t_min, float t_max) const
             rec.t = t;
             rec.position = ray.look_at(t);
             rec.normal = glm::normalize(rec.position - m_Origin);
-            rec.color = m_Color;
+            rec.color = m_Material->GetAlbedo();
             rec.mat_ptr = m_Material;
             if (glm::dot(rec.normal, ray.GetDir()) < 0) rec.front_face = true;
             hit = true;
@@ -49,7 +49,7 @@ bool Sphere::hit(const Ray& ray, HitRecord& rec, float t_min, float t_max) const
             rec.t = t;
             rec.position = ray.look_at(t);
             rec.normal = glm::normalize(rec.position - m_Origin);
-            rec.color = m_Color;
+            rec.color = m_Material->GetAlbedo();
             rec.mat_ptr = m_Material;
             if (glm::dot(rec.normal, ray.GetDir()) < 0) rec.front_face = true;
             hit = true;

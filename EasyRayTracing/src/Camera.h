@@ -18,4 +18,7 @@ private:
 	glm::vec3 m_Origin;
 	glm::vec3 m_Horizontal;
 	glm::vec3 m_Vertical;
+
+	float m_AspectRatio;
+	float vfov; // Vertical view angle (field of view)
 };
