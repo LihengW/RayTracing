@@ -36,12 +36,12 @@ glm::vec3 shading(Ray ray, HitRecord& rec, int depth, ObjectTable& objtable)
 int main() {
     Picture* pic = new Picture(width, height, 4);
 
-    float h_offset = 16.0f;
-    float v_offset = 9.0f;
+    float v_offset = 16.0f;
+    float h_offset = 9.0f;
 
     ObjectTable objtable;
 
-    Camera camera({ 0.0f, 0.0f, 0.0f }, h_offset, v_offset);
+    Camera camera({ 0.0f, 1.5f, 0.0f }, { 0.0f, 1.0f, -1.0f }, {0.0f, 1.0f, 0.0f}, width, v_offset / h_offset, 60, 15.0f, 0.05f);
 
     // Materials
     std::shared_ptr<Lambertian> diffuse_blue = std::make_shared<Lambertian>(glm::vec3{ 0.1f, 0.2f, 0.9f });
@@ -51,26 +51,22 @@ int main() {
     std::shared_ptr<Dielectric> glass = std::make_shared<Dielectric>(glm::vec3{ 0.8f, 0.2f, 0.3f }, 1.5f);
 
     // Objects
-    objtable.Add(std::make_shared<Sphere>(glass, glm::vec3(0.0f, 0.3f, -8.0f), 6.0f));
-    objtable.Add(std::make_shared<Sphere>(diffuse_org, glm::vec3(0.0f, 0.0f, -50.0f), 8.0f));
-    objtable.Add(std::make_shared<Sphere>(metal_red, glm::vec3(5.0f, 0.0f, -2.0f), 1.0f));
-    objtable.Add(std::make_shared<Sphere>(diffuse_blue, glm::vec3(-7.0f, 0.0f, -3.0f), 2.0f));
-    objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-0.0f, -30.0f, -15.0f), 25.0f));
+    objtable.Add(std::make_shared<Sphere>(glass, glm::vec3(0.0f, 0.3f, -18.0f), 6.0f));
+    objtable.Add(std::make_shared<Sphere>(diffuse_org, glm::vec3(0.0f, 5.0f, -100.0f), 8.0f));
+    objtable.Add(std::make_shared<Sphere>(metal_red, glm::vec3(5.0f, 0.0f, -12.0f), 1.0f));
+    objtable.Add(std::make_shared<Sphere>(diffuse_blue, glm::vec3(-7.0f, 5.0f, -13.0f), 2.0f));
+    objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-0.0f, -30.0f, -40.0f), 30.0f));
     // objtable.Add(std::make_shared<Sphere>(glm::vec3(0.0f, -30.0f, -5.0f), 28.0f));
 
     // Shading every pixel
     for (int x = 0; x < width; ++x) {
         for (int y = 0; y < height; ++y)
         {
-            if (x == width / 2 && y == height / 2)
-            {
-                std::cout << std::endl;
-            }
             glm::vec3 colorbuffer(0.0f);
             for (int k = 0; k < sample_per_pixel; k++)
             {
                 HitRecord rec;
-                Ray ray = camera.GetOrthoRay(-1.0f + 2.0f * (x + Utility::RandomFloat()) / width, -1.0f + 2.0f * (y + Utility::RandomFloat()) / height);
+                Ray ray = camera.GetPerspectiveRay(-1.0f + 2.0f * (x + Utility::RandomFloat()) / width, -1.0f + 2.0f * (y + Utility::RandomFloat()) / height);
                 colorbuffer += shading(ray, rec, 0, objtable);
             }
             // output pixel

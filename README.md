@@ -4,8 +4,6 @@ a RayTracing project created by Liheng. The final target is to build a physical 
 
 ![image](EasyRayTracing/assets/output.png)
 
-
-
 The function has complished:
 
 * Simple Path Tracker

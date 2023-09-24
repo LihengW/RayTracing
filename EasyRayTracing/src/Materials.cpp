@@ -53,7 +53,7 @@ Dielectric::Dielectric(glm::vec3 albedo, float refraction, float fuzziness)
 
 bool Dielectric::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray& newray)
 {
-	attenuation = glm::vec3{ 1.0f };
+	attenuation = albedo;
 	float refraction_ratio;
 	float cos_theta;
 	if (rec.front_face)
@@ -72,7 +72,6 @@ bool Dielectric::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation,
 	if (sin_theta * refraction_ratio > 1.0f || reflectance(cos_theta, refraction_ratio) > Utility::RandomFloat())
 	{
 		// reflect
-		attenuation = albedo;
 		glm::vec3 newdir = ray.GetDir() - 2.0f * glm::dot(rec.normal, ray.GetDir()) * rec.normal;
 		newdir = glm::normalize(fuzziness * Utility::RandomUnitVector() + newdir);
 		newray.SetDir(newdir);
