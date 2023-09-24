@@ -41,21 +41,27 @@ int main() {
 
     ObjectTable objtable;
 
-    Camera camera({ 0.0f, 1.5f, 0.0f }, { 0.0f, 1.0f, -1.0f }, {0.0f, 1.0f, 0.0f}, width, v_offset / h_offset, 60, 15.0f, 0.05f);
+    Camera camera({ 0.0f, 3.5f, 0.0f }, { 0.0f, 3.4f, -1.0f }, {0.0f, 1.0f, 0.0f}, width, v_offset / h_offset, 90, 12.0f, 0.005f);
 
     // Materials
     std::shared_ptr<Lambertian> diffuse_blue = std::make_shared<Lambertian>(glm::vec3{ 0.1f, 0.2f, 0.9f });
-    std::shared_ptr<Lambertian> diffuse_org = std::make_shared<Lambertian>(glm::vec3{ 0.2f, 0.9f, 0.3f });
+    std::shared_ptr<Lambertian> diffuse_green = std::make_shared<Lambertian>(glm::vec3{ 0.2f, 0.9f, 0.3f });
     std::shared_ptr<Metal> metal_red = std::make_shared<Metal>(glm::vec3{ 0.8f, 0.2f, 0.3f });
     std::shared_ptr<Metal> metal_pure = std::make_shared<Metal>(glm::vec3{ 1.0f, 1.0f, 1.0f }, 0.05f);
-    std::shared_ptr<Dielectric> glass = std::make_shared<Dielectric>(glm::vec3{ 0.8f, 0.2f, 0.3f }, 1.5f);
+    std::shared_ptr<Dielectric> glass = std::make_shared<Dielectric>(glm::vec3{ 1.0f, 0.9f, 0.9f }, 1.5f);
+    std::shared_ptr<Dielectric> glass_green = std::make_shared<Dielectric>(glm::vec3{ 0.0f, 0.9f, 0.9f }, 1.5f);
 
     // Objects
-    objtable.Add(std::make_shared<Sphere>(glass, glm::vec3(0.0f, 0.3f, -18.0f), 6.0f));
-    objtable.Add(std::make_shared<Sphere>(diffuse_org, glm::vec3(0.0f, 5.0f, -100.0f), 8.0f));
-    objtable.Add(std::make_shared<Sphere>(metal_red, glm::vec3(5.0f, 0.0f, -12.0f), 1.0f));
-    objtable.Add(std::make_shared<Sphere>(diffuse_blue, glm::vec3(-7.0f, 5.0f, -13.0f), 2.0f));
-    objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-0.0f, -30.0f, -40.0f), 30.0f));
+    objtable.Add(std::make_shared<Sphere>(glass, glm::vec3(0.0f, 6.0f, -15.0f), 6.0f));
+    objtable.Add(std::make_shared<Sphere>(glass_green, glm::vec3(0.0f, 10.0f, -100.0f), 70.0f));
+
+    objtable.Add(std::make_shared<Sphere>(diffuse_green, glm::vec3(9.0f, 5.5f, -30.0f), 5.0f));
+    objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-6.0f, 7.5f, -35.0f), 5.0f));
+
+    objtable.Add(std::make_shared<Sphere>(metal_red, glm::vec3(5.0f, 2.0f, -12.0f), 1.0f));
+    objtable.Add(std::make_shared<Sphere>(diffuse_blue, glm::vec3(-7.0f, 3.5f, -13.0f), 2.0f));
+
+    objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-0.0f, -90.0f, -20.0f), 90.0f));
     // objtable.Add(std::make_shared<Sphere>(glm::vec3(0.0f, -30.0f, -5.0f), 28.0f));
 
     // Shading every pixel

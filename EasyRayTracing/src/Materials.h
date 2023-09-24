@@ -38,7 +38,7 @@ private:
 class Dielectric : public Material
 {
 public:
-	Dielectric(glm::vec3 albedo = { 1.0f, 1.0f, 1.0f }, float refraction = 0.1f, float fuzziness = 0.05f);
+	Dielectric(glm::vec3 albedo = { 1.0f, 1.0f, 1.0f }, float refraction = 1.0f, float fuzziness = 0.05f);
 	virtual bool scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray& newray) override;
 	virtual glm::vec3& GetAlbedo() override { return albedo; }
 
