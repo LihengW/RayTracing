@@ -1,7 +1,10 @@
 #include "utility.h"
 
-float Utility::infinity = std::numeric_limits<float>::infinity();
-float Utility::pi = 3.14159265358979f;
+const float Utility::infinity = std::numeric_limits<float>::infinity();
+const float Utility::pi = 3.14159265358979f;
+
+const float Utility::FLOAT_MAX = std::numeric_limits<float>::max();
+const float Utility::FLOAT_MIN = std::numeric_limits<float>::min();
 
 Utility::Utility()
 {

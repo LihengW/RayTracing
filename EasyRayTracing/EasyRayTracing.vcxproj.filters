@@ -39,6 +39,12 @@
     <ClCompile Include="src\Materials.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\AABB.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BVHnode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Ray.h">
@@ -63,6 +69,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Materials.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AABB.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BVHnode.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

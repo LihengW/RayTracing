@@ -5,18 +5,18 @@ static int height = 108 * 10;
 static int sample_per_pixel = 20;
 static int max_depth = 5;
 
-glm::vec3 shading(Ray ray, HitRecord& rec, int depth, ObjectTable& objtable)
+glm::vec3 shading(Ray ray, HitRecord& rec, int depth, BVHnode& bvh)
 {
     if (depth >= max_depth) return glm::vec3{ 0.0f };
 
-    if (objtable.hit(ray, rec, 0.0000001f))  // third para use to privent detect themselves (shadow ance)
+    if (bvh.Hit(ray, {0.000001f, Utility::FLOAT_MAX}, rec))  // third para use to privent detect themselves (shadow ance)
     {
         Ray next_ray;
         glm::vec3 attenuation{0.0f};
         if (rec.mat_ptr->scatter(ray, rec, attenuation, next_ray))
         {
             rec.reset();
-            return attenuation * shading(next_ray, rec, depth + 1, objtable);
+            return attenuation * shading(next_ray, rec, depth + 1, bvh);
             // return attenuation * pow(1.0f / 2.0f, (float)depth) * shading(next_ray, rec, depth + 1, objtable);
         }
         else
@@ -64,6 +64,9 @@ int main() {
     objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-0.0f, -90.0f, -20.0f), 90.0f));
     // objtable.Add(std::make_shared<Sphere>(glm::vec3(0.0f, -30.0f, -5.0f), 28.0f));
 
+    // Create BVH Tree
+    BVHnode bvh = BVHnode(objtable);
+
     // Shading every pixel
     for (int x = 0; x < width; ++x) {
         for (int y = 0; y < height; ++y)
@@ -73,7 +76,7 @@ int main() {
             {
                 HitRecord rec;
                 Ray ray = camera.GetPerspectiveRay(-1.0f + 2.0f * (x + Utility::RandomFloat()) / width, -1.0f + 2.0f * (y + Utility::RandomFloat()) / height);
-                colorbuffer += shading(ray, rec, 0, objtable);
+                colorbuffer += shading(ray, rec, 0, bvh);
             }
             // output pixel
             pic->modify(x, y, colorbuffer / (float)sample_per_pixel);
