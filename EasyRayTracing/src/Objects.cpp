@@ -4,14 +4,16 @@
 Sphere::Sphere(const glm::vec3& origin, float radius)
 	:m_Origin(origin), m_Radius(radius)
 {
-    glm::vec3 rad_vec{ radius };
+    glm::vec3 rad_vec{ radius + 5.0f };
+    //m_BoundingBox = AABB();
     m_BoundingBox = AABB(origin - rad_vec, origin + rad_vec);
 }
 
 Sphere::Sphere(std::shared_ptr<Material> material, const glm::vec3& origin, float radius)
     :m_Origin(origin), m_Radius(radius), m_Material(material)
 {
-    glm::vec3 rad_vec{ radius };
+    glm::vec3 rad_vec{ radius + 5.0f };
+    // m_BoundingBox = AABB();
     m_BoundingBox = AABB(origin - rad_vec, origin + rad_vec);
 }
 
@@ -19,7 +21,7 @@ bool Sphere::Hit(const Ray& ray, Interval ray_t, HitRecord& rec) const
 {
     bool Hit = false;
     glm::vec3 o_minus = ray.GetOrigin() - m_Origin;
-    float c = glm::dot(o_minus, o_minus) - pow(m_Radius, 2);
+    float c = glm::dot(o_minus, o_minus) - powf(m_Radius, 2);
     float b = 2 * glm::dot(o_minus, ray.GetDir());
     float delta = b * b - 4 * c;
     if (delta == 0)

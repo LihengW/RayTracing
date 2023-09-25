@@ -1,18 +1,13 @@
 #include "AABB.h"
 
 Interval::Interval()
-	:min(Utility::FLOAT_MIN), max(Utility::FLOAT_MAX)
+	:min(-1000.0f), max(1000.0f)
 {}
 
 Interval::Interval(float num1, float num2)
 {
 	min = Utility::Min(num1, num2);
 	max = Utility::Max(num1, num2);
-}
-
-Interval::Interval(const glm::vec2& vec2)
-{
-	Interval(vec2.x, vec2.y);
 }
 
 Interval::Interval(const Interval& interval1, const Interval& interval2)
@@ -54,7 +49,7 @@ bool AABB::Hit(const Ray & ray, Interval ray_t) const
 		if (t0 > ray_t.min) ray_t.min = t0;
 		if (t1 < ray_t.max) ray_t.max = t1;
 
-		if (ray_t.min > ray_t.max) return false;
+		if (ray_t.min >= ray_t.max) return false;
 	}
 	return true;
 }

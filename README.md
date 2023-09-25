@@ -22,6 +22,12 @@ The function has complished:
 
 Coming:
 
+- [x] AABB
+
+Axis-Aligned Bounding Boxes, This is a tree structure used to optimize on the intersection of rays and objects. However, when there are only few things inside the scene and they are overlaping on each other, AABB may lessen the efficiency... Anyway, we have that now!
+
+*Also, something wired happens when it applys on the Dielectric Objects, it seems too many refraction and rays are bumping there. I have to expand the bounding box of these objects to make it looks normal. Anyway, I will fix that someday.*
+
 - [ ] Emitting Objects
 
 - [ ] Triangles

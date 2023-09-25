@@ -4,11 +4,6 @@ BVHnode::BVHnode(const std::vector<std::shared_ptr<Object>>& src_objs, size_t st
 {
 	auto objects = src_objs; // copy
 	size_t objects_num = end - start;
-	if (objects_num == 0)
-	{
-		left = nullptr;
-		right = nullptr;
-	}
 
 	int axis = Utility::RandomInt() % 3;
 	auto comparator = (axis == 0) ? box_x_compare
@@ -47,6 +42,7 @@ bool BVHnode::Hit(const Ray& ray, Interval ray_t, HitRecord& rec) const
 	if (!m_BoundingBox.Hit(ray, ray_t)) return false;
 
 	bool hit_left = left->Hit(ray, ray_t, rec);
+	ray_t.max = hit_left ? rec.t : ray_t.max;
 	bool hit_right = right->Hit(ray, ray_t, rec);
 
 	return hit_left || hit_right;

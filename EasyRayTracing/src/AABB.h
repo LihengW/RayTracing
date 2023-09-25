@@ -6,7 +6,6 @@ class Interval {
 public:
 	Interval();
 	Interval(float num1, float num2);
-	Interval(const glm::vec2& vec2);
 	Interval(const Interval& interval1, const Interval& interval2);
 
 	float GetSize() const { return max - min; };

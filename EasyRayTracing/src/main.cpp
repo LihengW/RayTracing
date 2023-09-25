@@ -3,11 +3,14 @@
 static int width = 192 * 10;
 static int height = 108 * 10;
 static int sample_per_pixel = 20;
-static int max_depth = 5;
+static int max_depth = 10;
 
 glm::vec3 shading(Ray ray, HitRecord& rec, int depth, BVHnode& bvh)
 {
-    if (depth >= max_depth) return glm::vec3{ 0.0f };
+    if (depth >= max_depth)
+    {
+        return glm::vec3{ 0.0f };
+    }
 
     if (bvh.Hit(ray, {0.000001f, Utility::FLOAT_MAX}, rec))  // third para use to privent detect themselves (shadow ance)
     {
@@ -21,12 +24,14 @@ glm::vec3 shading(Ray ray, HitRecord& rec, int depth, BVHnode& bvh)
         }
         else
         {
+            rec.reset();
             return glm::vec3{ 0.0f };
         }
     }
     else
     {
         float a = ray.GetDir().y / 2.0f + 0.5f;
+        rec.reset();
         return (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f); // ambient light
     }
 }
@@ -41,22 +46,26 @@ int main() {
 
     ObjectTable objtable;
 
-    Camera camera({ 0.0f, 3.5f, 0.0f }, { 0.0f, 3.4f, -1.0f }, {0.0f, 1.0f, 0.0f}, width, v_offset / h_offset, 90, 12.0f, 0.005f);
+    Camera camera({ 0.0f, 3.5f, 0.0f }, { 0.0f, 3.4f, -1.0f }, {0.0f, 1.0f, 0.0f}, (float)width, v_offset / h_offset, 90, 12.0f, 0.005f);
 
     // Materials
     std::shared_ptr<Lambertian> diffuse_blue = std::make_shared<Lambertian>(glm::vec3{ 0.1f, 0.2f, 0.9f });
     std::shared_ptr<Lambertian> diffuse_green = std::make_shared<Lambertian>(glm::vec3{ 0.2f, 0.9f, 0.3f });
     std::shared_ptr<Metal> metal_red = std::make_shared<Metal>(glm::vec3{ 0.8f, 0.2f, 0.3f });
     std::shared_ptr<Metal> metal_pure = std::make_shared<Metal>(glm::vec3{ 1.0f, 1.0f, 1.0f }, 0.05f);
-    std::shared_ptr<Dielectric> glass = std::make_shared<Dielectric>(glm::vec3{ 1.0f, 0.9f, 0.9f }, 1.5f);
+    std::shared_ptr<Dielectric> glass = std::make_shared<Dielectric>(glm::vec3{ 1.0f, 1.0f, 1.0f }, 1.0f);
     std::shared_ptr<Dielectric> glass_green = std::make_shared<Dielectric>(glm::vec3{ 0.0f, 0.9f, 0.9f }, 1.5f);
 
     // Objects
-    objtable.Add(std::make_shared<Sphere>(glass, glm::vec3(0.0f, 6.0f, -15.0f), 6.0f));
+    std::shared_ptr<Sphere> s = std::make_shared<Sphere>(glass, glm::vec3(0.0f, 6.0f, -15.0f), 6.0f);
+    AABB box = AABB();
+    s->SetBB(box);
+    objtable.Add(s);
+
     objtable.Add(std::make_shared<Sphere>(glass_green, glm::vec3(0.0f, 10.0f, -100.0f), 70.0f));
 
     objtable.Add(std::make_shared<Sphere>(diffuse_green, glm::vec3(9.0f, 5.5f, -30.0f), 5.0f));
-    objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-6.0f, 7.5f, -35.0f), 5.0f));
+    // objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-6.0f, 7.5f, -35.0f), 5.0f)); this one looks wired !
 
     objtable.Add(std::make_shared<Sphere>(metal_red, glm::vec3(5.0f, 2.0f, -12.0f), 1.0f));
     objtable.Add(std::make_shared<Sphere>(diffuse_blue, glm::vec3(-7.0f, 3.5f, -13.0f), 2.0f));
