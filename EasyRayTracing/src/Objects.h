@@ -43,6 +43,10 @@ public:
 	virtual bool Hit(const Ray& ray, Interval ray_t, HitRecord& rec) const override;
 	virtual AABB GetBB() const override { return m_BoundingBox; }
 
+	void GetUVcord(const glm::vec3& pos, float& u, float& v) const;
+
+	void SetUVOffset(float u, float v);
+
 	void SetBB(AABB& box) { m_BoundingBox = box; } // dangerous function
 
 private:
@@ -50,4 +54,7 @@ private:
 	std::shared_ptr<Material> m_Material;
 	float m_Radius;
 	AABB m_BoundingBox;
+
+	float u_offset;
+	float v_offset;
 };

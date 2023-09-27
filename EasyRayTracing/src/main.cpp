@@ -49,20 +49,30 @@ int main() {
     Camera camera({ 0.0f, 3.5f, 0.0f }, { 0.0f, 3.4f, -1.0f }, {0.0f, 1.0f, 0.0f}, (float)width, v_offset / h_offset, 90, 12.0f, 0.005f);
 
     // Materials
+    std::shared_ptr<Lambertian> diffuse_white = std::make_shared<Lambertian>(glm::vec3{ 1.0f, 1.0f, 1.0f });
     std::shared_ptr<Lambertian> diffuse_blue = std::make_shared<Lambertian>(glm::vec3{ 0.1f, 0.2f, 0.9f });
     std::shared_ptr<Lambertian> diffuse_green = std::make_shared<Lambertian>(glm::vec3{ 0.2f, 0.9f, 0.3f });
     std::shared_ptr<Metal> metal_red = std::make_shared<Metal>(glm::vec3{ 0.8f, 0.2f, 0.3f });
     std::shared_ptr<Metal> metal_pure = std::make_shared<Metal>(glm::vec3{ 1.0f, 1.0f, 1.0f }, 0.05f);
-    std::shared_ptr<Dielectric> glass = std::make_shared<Dielectric>(glm::vec3{ 1.0f, 1.0f, 1.0f }, 1.0f);
-    std::shared_ptr<Dielectric> glass_green = std::make_shared<Dielectric>(glm::vec3{ 0.0f, 0.9f, 0.9f }, 1.5f);
+    std::shared_ptr<Dielectric> glass = std::make_shared<Dielectric>(glm::vec3{ 1.0f, 1.0f, 1.0f }, 1.1f, 0.0f);
+    std::shared_ptr<Dielectric> glass_green = std::make_shared<Dielectric>(glm::vec3{ 0.0f, 0.9f, 0.9f }, 1.5f, 0.0f);
+
+    // Textures
+    std::shared_ptr<CheckerTex> checker_tex = std::make_shared<CheckerTex>(5.00f, glm::vec3{ 0.3f, 0.7f, 0.2f }, glm::vec3{ 1.0f, 1.0f, 1.0f });
+    metal_pure->BindTex(checker_tex);
+
+    std::shared_ptr<Texture2D> kita = std::make_shared<Texture2D>("assets/textures/Earth.jpg");
+    diffuse_white->BindTex(kita);
 
     // Objects
-    std::shared_ptr<Sphere> s = std::make_shared<Sphere>(glass, glm::vec3(0.0f, 6.0f, -15.0f), 6.0f);
+    std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glass, glm::vec3(0.0f, 6.0f, -15.0f), 6.0f);
     AABB box = AABB();
-    s->SetBB(box);
-    objtable.Add(s);
+    s1->SetBB(box);
+    objtable.Add(s1);
 
-    objtable.Add(std::make_shared<Sphere>(glass_green, glm::vec3(0.0f, 10.0f, -100.0f), 70.0f));
+    std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(diffuse_white, glm::vec3(0.0f, 10.0f, -100.0f), 70.0f);
+    s2->SetUVOffset(0.27f, 0.25f);
+    objtable.Add(s2);
 
     objtable.Add(std::make_shared<Sphere>(diffuse_green, glm::vec3(9.0f, 5.5f, -30.0f), 5.0f));
     // objtable.Add(std::make_shared<Sphere>(metal_pure, glm::vec3(-6.0f, 7.5f, -35.0f), 5.0f)); this one looks wired !

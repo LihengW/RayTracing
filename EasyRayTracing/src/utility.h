@@ -8,21 +8,6 @@
 
 class Material;
 
-struct HitRecord
-{
-	glm::vec3 position{ 0.0f, 0.0f, 0.0f };
-	glm::vec3 normal{ 0.0f, 0.0f, 0.0f };
-	glm::vec3 color{ 0.0f, 0.0f, 0.0f };
-	std::shared_ptr<Material> mat_ptr;
-	float t = std::numeric_limits<float>::max();
-	bool front_face = false;
-
-	inline void reset()
-	{
-		t = std::numeric_limits<float>::max();
-		front_face = false;
-	}
-};
 
 class Utility
 {
@@ -52,4 +37,23 @@ public:
 	static const float FLOAT_MAX;
 	static const float FLOAT_MIN;
 
+};
+
+struct HitRecord
+{
+	glm::vec3 position{ 0.0f, 0.0f, 0.0f };
+	glm::vec3 normal{ 0.0f, 0.0f, 0.0f };
+
+	std::shared_ptr<Material> mat_ptr;
+
+	float u, v;
+
+	float t = Utility::FLOAT_MAX;
+	bool front_face = false;
+
+	inline void reset()
+	{
+		t = Utility::FLOAT_MAX;
+		front_face = false;
+	}
 };

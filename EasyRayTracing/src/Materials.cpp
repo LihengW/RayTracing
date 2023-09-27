@@ -12,9 +12,16 @@ bool Lambertian::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation,
 	}
 	if (Utility::RandomFloat() <= scatter_rate)
 	{
+		if (tex != nullptr)
+		{
+			attenuation = tex->GetValue(rec.u, rec.v, rec.position);
+		}
+		else
+		{
+			attenuation = albedo;
+		}
 		glm::vec3 newdir;
 		do { newdir = Utility::RandomUnitVector(); } while (glm::dot(newdir, rec.normal) < 0);
-		attenuation = albedo;
 		newray.SetOrigin(rec.position + 0.0001f * rec.normal);
 		newray.SetDir(glm::normalize(newdir + rec.normal));
 		return true;
@@ -37,7 +44,15 @@ bool Metal::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray&
 		return false;
 	}
 
-	attenuation = albedo;
+	if (tex != nullptr)
+	{
+		attenuation = tex->GetValue(rec.u, rec.v, rec.position);
+	}
+	else
+	{
+		attenuation = albedo;
+	}
+
 	newray.SetOrigin(rec.position + 0.0001f * rec.normal);
 	glm::vec3 newdir = ray.GetDir() - 2.0f * glm::dot(rec.normal, ray.GetDir()) * rec.normal;
 	newdir = glm::normalize(fuzziness * Utility::RandomUnitVector() + newdir);
@@ -53,7 +68,14 @@ Dielectric::Dielectric(glm::vec3 albedo, float refraction, float fuzziness)
 
 bool Dielectric::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray& newray)
 {
-	attenuation = albedo;
+	if (tex != nullptr)
+	{
+		attenuation = tex->GetValue(rec.u, rec.v, rec.position);
+	}
+	else
+	{
+		attenuation = albedo;
+	}
 	float refraction_ratio;
 	float cos_theta;
 	if (rec.front_face)
@@ -72,10 +94,21 @@ bool Dielectric::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation,
 	if (sin_theta * refraction_ratio > 1.0f || reflectance(cos_theta, refraction_ratio) > Utility::RandomFloat())
 	{
 		// reflect
-		glm::vec3 newdir = ray.GetDir() - 2.0f * glm::dot(rec.normal, ray.GetDir()) * rec.normal;
-		newdir = glm::normalize(fuzziness * Utility::RandomUnitVector() + newdir);
-		newray.SetDir(newdir);
-		newray.SetOrigin(rec.position + 0.0001f * rec.normal);
+		// glm::vec3 newdir = ray.GetDir() - 2.0f * glm::dot(rec.normal, ray.GetDir()) * rec.normal;
+		if (rec.front_face)
+		{
+			glm::vec3 newdir = glm::reflect(ray.GetDir(), rec.normal);
+			newdir = glm::normalize(fuzziness * Utility::RandomUnitVector() + newdir);
+			newray.SetDir(newdir);
+			newray.SetOrigin(rec.position + 0.0001f * rec.normal);
+		}
+		else
+		{
+			glm::vec3 newdir = glm::reflect(ray.GetDir(), -rec.normal);
+			newdir = glm::normalize(fuzziness * Utility::RandomUnitVector() + newdir);
+			newray.SetDir(newdir);
+			newray.SetOrigin(rec.position - 0.0001f * rec.normal);
+		}
 	}
 	else
 	{
@@ -100,5 +133,5 @@ float Dielectric::reflectance(float cosine, float ref_ratio)
 {
 	auto r0 = (1.0f - ref_ratio) / (1.0f + ref_ratio);
 	r0 = r0 * r0;
-	return r0 + (1.0f - r0) * pow((1.0f - cosine), 5);
+	return r0 + (1.0f - r0) * powf((1.0f - cosine), 5);
 }

@@ -138,6 +138,7 @@
     <ClCompile Include="src\PerspectiveCamera.cpp" />
     <ClCompile Include="src\Picture.cpp" />
     <ClCompile Include="src\Ray.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +151,7 @@
     <ClInclude Include="src\PerspectiveCamera.h" />
     <ClInclude Include="src\Picture.h" />
     <ClInclude Include="src\Ray.h" />
+    <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
