@@ -34,6 +34,14 @@ AABB::AABB(const AABB& box1, const AABB& box2)
 	z = Interval(box1.z, box2.z);
 }
 
+AABB AABB::Pad() const
+{
+	Interval newx = x.Expand(0.001f);
+	Interval newy = y.Expand(0.001f);
+	Interval newz = z.Expand(0.001f);
+	return AABB(newx, newy, newz);
+}
+
 bool AABB::Hit(const Ray & ray, Interval ray_t) const
 {
 	for (int dim = 0; dim < 3; dim++)

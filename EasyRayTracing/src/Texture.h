@@ -1,12 +1,15 @@
 #pragma once
 
 #include "utility.h"
+#include "Perlin.h"
 
 class Texture {
 public:
 	virtual ~Texture() = default;
 	virtual glm::vec3 GetValue(float u, float v, const glm::vec3& p) const = 0;
 };
+
+// 2D Tex
 
 class SolidColorTex : public Texture
 {
@@ -33,6 +36,21 @@ private:
     std::string m_Path;
     int m_Width, m_Height, m_Channel;
     unsigned char* m_Data;
+};
+
+
+// 3D Tex
+
+class PerlinTex : public Texture
+{
+public:
+    PerlinTex() : scale(1.0f) {}
+    virtual glm::vec3 GetValue(float u, float v, const glm::vec3& p) const;
+    void setscale(float _scale);
+
+private:
+    Perlin perlin_noise;
+    float scale;
 };
 
 class CheckerTex : public Texture

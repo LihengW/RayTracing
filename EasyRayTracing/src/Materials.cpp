@@ -135,3 +135,19 @@ float Dielectric::reflectance(float cosine, float ref_ratio)
 	r0 = r0 * r0;
 	return r0 + (1.0f - r0) * powf((1.0f - cosine), 5);
 }
+
+Emit::Emit(std::shared_ptr<Material> mat, glm::vec3 Emitalbedo)
+	:m_SurfaceMat(mat), Emitalbedo(Emitalbedo)
+{
+	;
+}
+
+glm::vec3 Emit::emitted(float u, float v, const glm::vec3& pos) const
+{
+	return Emitalbedo;
+}
+
+bool Emit::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray& newray)
+{
+	return m_SurfaceMat->scatter(ray, rec, attenuation, newray);
+}

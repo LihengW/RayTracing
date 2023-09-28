@@ -20,6 +20,7 @@ public:
 	inline static glm::vec3 RandomVec3() { return glm::vec3{ RandomFloat(), RandomFloat(), RandomFloat() }; };
 
 	inline static float clamp(float x, float min, float max) { if (x < min) return min; if (x > max) return max; return x; }
+	static glm::vec3 clamp(glm::vec3 vec, float min, float max);
 	inline static float LineartoGamma(float linear_comp) { return sqrt(linear_comp); }
 
 	inline static float DegreetoRadience(float degree) { return degree / 180.0f * pi; }

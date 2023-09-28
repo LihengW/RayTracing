@@ -26,7 +26,7 @@ Texture2D::Texture2D(const std::string& path)
 
 void Texture2D::GetPixelData(int x, int y, glm::vec3& rgb) const
 {
-    int index = m_Channel * (y*(m_Width)+x);
+    long index = m_Channel * (y*(m_Width)+x);
     rgb.r = (unsigned int)m_Data[index];
     rgb.g = (unsigned int)m_Data[index+1];
     rgb.b = (unsigned int)m_Data[index+2];
@@ -34,7 +34,7 @@ void Texture2D::GetPixelData(int x, int y, glm::vec3& rgb) const
 
 void Texture2D::GetPixelData(int x, int y, glm::vec4& rgba) const
 {
-    int index = m_Channel * (y * (m_Width)+x);
+    long index = m_Channel * (y * (m_Width)+x);
     rgba.r = (unsigned int)m_Data[index];
     rgba.g = (unsigned int)m_Data[index + 1];
     rgba.b = (unsigned int)m_Data[index + 2];
@@ -51,7 +51,18 @@ void Texture2D::GetPixelData(int x, int y, glm::vec4& rgba) const
 glm::vec3 Texture2D::GetValue(float u, float v, const glm::vec3& p) const
 {
     glm::vec3 color{ 0.0f };
-    GetPixelData((int)(u / 1.0f * m_Width), (int)(v / 1.0f * m_Height), color);
+    GetPixelData((int)(u / 1.0f * (m_Width - 1)), (int)(v / 1.0f * (m_Height - 1)), color);
     color = color / 255.0f;
     return color;
+}
+
+glm::vec3 PerlinTex::GetValue(float u, float v, const glm::vec3& p) const
+{
+    auto s = scale * p;
+    return glm::vec3{1.0f} * 0.5f * (1.0f + sinf(s.z + 10.0f * perlin_noise.turb(s)));
+}
+ 
+void PerlinTex::setscale(float _scale)
+{
+    scale = _scale;
 }

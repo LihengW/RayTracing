@@ -6,12 +6,23 @@
 class Camera
 {
 public:
-	Camera(glm::vec3 origin, glm::vec3 lookat, glm::vec3 up, float width, float aspectratio, float vfov, float focus_dist, float len_radius);
+	Camera() = default;
+
+	Camera(glm::vec3 origin, glm::vec3 lookat, glm::vec3 up,  // Transformation
+		   float width, float aspectratio, float vfov,        // Camera Attributes
+		   float focus_dist, float len_radius,				  // defocus info
+		   glm::vec3 background = glm::vec3{0.0f});           // Environment Light 
 
 	Ray GetPerspectiveRay(float u, float v);
 	// Ray GetOrthoRay(float u, float v);
 
 	inline glm::vec3 GetOrigin() { return m_Origin; }
+
+	inline void SetBackground(const glm::vec3& color) { m_Background = color; }
+	inline glm::vec3 GetBackground() const { return m_Background; }
+
+public:
+	int sample_per_pixel = 20;
 
 private:
 	glm::vec3 m_Origin;
@@ -30,4 +41,7 @@ private:
 
 	float m_Horizontal;
 	float m_Vertical;
+
+	glm::vec3 m_Background;
+	
 };

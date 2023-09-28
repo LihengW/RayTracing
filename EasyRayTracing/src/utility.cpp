@@ -11,6 +11,14 @@ Utility::Utility()
 	;
 }
 
+glm::vec3 Utility::clamp(glm::vec3 vec, float min, float max)
+{
+	float x = clamp(vec.x, min, max);
+	float y = clamp(vec.y, min, max);
+	float z = clamp(vec.z, min, max);
+	return glm::vec3(x, y, z);
+}
+
 glm::vec3 Utility::RandomUnitVector()
 {
 	float theta = RandomFloat(0.0f, 2 * pi);

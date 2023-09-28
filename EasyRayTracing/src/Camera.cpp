@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 origin, glm::vec3 lookat, glm::vec3 up, float width, float aspectratio, float vfov, float focus_dist, float len_radius)
-	:m_Origin(origin), m_Horizontal(width), m_AspectRatio(aspectratio), m_Vfov(vfov), m_FocusDist(focus_dist), m_LenRadius(len_radius)
+Camera::Camera(glm::vec3 origin, glm::vec3 lookat, glm::vec3 up, float width, float aspectratio, float vfov, float focus_dist, float len_radius, glm::vec3 background)
+	:m_Origin(origin), m_Horizontal(width), m_AspectRatio(aspectratio), m_Vfov(vfov), m_FocusDist(focus_dist), m_LenRadius(len_radius), m_Background(background)
 {
 	m_Vertical = width / aspectratio;
 	m_LookDir = glm::normalize(lookat - origin);

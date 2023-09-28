@@ -135,6 +135,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Materials.cpp" />
     <ClCompile Include="src\Objects.cpp" />
+    <ClCompile Include="src\Perlin.cpp" />
     <ClCompile Include="src\PerspectiveCamera.cpp" />
     <ClCompile Include="src\Picture.cpp" />
     <ClCompile Include="src\Ray.cpp" />
@@ -148,9 +149,11 @@
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\Materials.h" />
     <ClInclude Include="src\Objects.h" />
+    <ClInclude Include="src\Perlin.h" />
     <ClInclude Include="src\PerspectiveCamera.h" />
     <ClInclude Include="src\Picture.h" />
     <ClInclude Include="src\Ray.h" />
+    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\utility.h" />
   </ItemGroup>
