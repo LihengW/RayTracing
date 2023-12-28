@@ -18,6 +18,8 @@ public:
 
 	int output(const std::string& path);
 
+	std::pair<unsigned int, unsigned int> size();
+
 private:
 	unsigned int m_Width, m_Height, m_Channel;
 	unsigned char* data;

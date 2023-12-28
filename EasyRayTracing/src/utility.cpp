@@ -11,6 +11,15 @@ Utility::Utility()
 	;
 }
 
+glm::vec3 Utility::RandomCosDir()
+{
+	// Cosine Sampling a Hemisphere
+	auto r1 = RandomFloat();
+	auto r2 = RandomFloat();
+	float phi = 2 * Utility::pi * r1;
+	return glm::vec3(glm::cos(phi) * glm::sqrt(r2), glm::sin(phi) * glm::sqrt(r2), glm::sqrt(1-r2));
+}
+
 glm::vec3 Utility::clamp(glm::vec3 vec, float min, float max)
 {
 	float x = clamp(vec.x, min, max);
@@ -31,4 +40,9 @@ glm::vec2 Utility::RandomDisk()
 {
 	float theta = RandomFloat(0.0f, 2 * pi);
 	return glm::vec2(sin(theta), cos(theta));
+}
+
+ONB::ONB(const glm::vec3& w)
+{
+	build_from_w(w);
 }

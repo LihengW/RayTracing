@@ -1,48 +1,23 @@
 #include "main.h"
 
-static int width = 1080;
-static int height = 1080;
+// Scene & Rendering Configurations
+
+static int width = 600;
+static float aspectRatio = 1.0f;
+static int height = (int)(width * aspectRatio);
+static int channel = 4;
+
 static int max_depth = 50;
+static int simple_per_pixel = 10;
 
-glm::vec3 shading(Ray ray, HitRecord& rec, int depth, std::shared_ptr<BVHnode> bvh, Camera camera)
+// Scenes
+
+std::shared_ptr<BVHnode> SphereScene(Camera& _camera, std::shared_ptr<BVHnode>& _scene, ObjectTable& _light)
 {
-    if (depth >= max_depth)
-    {
-        rec.reset();
-        return glm::vec3{ 0.0f };
-    }
-
-    if (bvh->Hit(ray, {0.000001f, Utility::FLOAT_MAX}, rec))  // third para use to privent detect themselves (shadow ance)
-    {
-        Ray next_ray;
-        glm::vec3 emit = rec.mat_ptr->emitted(rec.u, rec.v, rec.position);
-        glm::vec3 attenuation{ 0.0f };
-
-        if (rec.mat_ptr->scatter(ray, rec, attenuation, next_ray))
-        {
-            rec.reset();
-            return emit + attenuation * shading(next_ray, rec, depth + 1, bvh, camera);
-            // return attenuation * pow(1.0f / 2.0f, (float)depth) * shading(next_ray, rec, depth + 1, objtable);
-        }
-        else
-        {
-            rec.reset();
-            return emit;
-        }
-    }
-    else
-    {
-        rec.reset();
-        return camera.GetBackground();
-    }
-}
-
-
-std::shared_ptr<BVHnode> SphereScene(Camera& camera)
-{
-    camera = Camera({ 0.0f, 3.5f, 0.0f }, { 0.0f, 3.4f, -1.0f }, { 0.0f, 1.0f, 0.0f }, (float)width, 16.0f / 9.0f, 90, 12.0f, 0.005f);
+    _camera = Camera({ 0.0f, 3.5f, 0.0f }, { 0.0f, 3.4f, -1.0f }, { 0.0f, 1.0f, 0.0f }, (float)width, 16.0f / 9.0f, 90, 12.0f, 0.005f);
 
     ObjectTable objtable;
+    ObjectTable light;
 
     // Materials
     std::shared_ptr<Lambertian> diffuse_white = std::make_shared<Lambertian>(glm::vec3{ 1.0f, 1.0f, 1.0f });
@@ -85,9 +60,9 @@ std::shared_ptr<BVHnode> SphereScene(Camera& camera)
     return bvh;
 }
 
-std::shared_ptr<BVHnode> QuadScene(Camera& camera)
+std::shared_ptr<BVHnode> QuadScene(Camera& _camera, std::shared_ptr<BVHnode>& _scene, ObjectTable& _light)
 {
-    camera = Camera({ 0.0f, 3.5f, 0.0f }, { 0.0f, 3.4f, -1.0f }, { 0.0f, 1.0f, 0.0f }, (float)width, 16.0f / 9.0f, 90, 12.0f, 0.005f);
+    _camera = Camera({ 0.0f, 3.5f, 0.0f }, { 0.0f, 3.4f, -1.0f }, { 0.0f, 1.0f, 0.0f }, (float)width, 16.0f / 9.0f, 90, 12.0f, 0.005f);
 
     ObjectTable objtable;
 
@@ -135,13 +110,11 @@ std::shared_ptr<BVHnode> LightTestScene(Camera& camera)
     return bvh;
 }
 
-std::shared_ptr<BVHnode> CornellBox(Camera& camera)
+std::shared_ptr<BVHnode> CornellBox(Camera& _camera, std::shared_ptr<BVHnode>& _scene, ObjectTable& _light)
 {
-    camera = Camera({ 278.0f, 278.0f, -800.0f }, { 278.0f, 278.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 
+    _camera = Camera({ 278.0f, 278.0f, -800.0f }, { 278.0f, 278.0f, 0.0f }, { 0.0f, 1.0f, 0.0f },
         (float)width, 1.0f, 
         40, 12.0f, 0.0f);
-
-    camera.sample_per_pixel = 50;
 
     auto red =   std::make_shared<Lambertian>(glm::vec3(.65, .05, .05));
     auto white = std::make_shared<Lambertian>(glm::vec3(.73, .73, .73));
@@ -151,10 +124,10 @@ std::shared_ptr<BVHnode> CornellBox(Camera& camera)
     ObjectTable objtable;
 
     // outer box
+    _light.Add(std::make_shared<Quad>(glm::vec3(343, 554, 300), glm::vec3(-130, 0, 0), glm::vec3(0, 0, -105), light));
+    
     objtable.Add(std::make_shared<Quad>(glm::vec3(555, 0, 0), glm::vec3(0, 0, 555), glm::vec3(0, 555, 0), green));
     objtable.Add(std::make_shared<Quad>(glm::vec3(0, 0, 0), glm::vec3(0, 555, 0), glm::vec3(0, 0, 555), red));
-    objtable.Add(std::make_shared<Quad>(glm::vec3(343, 554, 300), glm::vec3(-130, 0, 0), glm::vec3(0, 0, -105), light));
-
     objtable.Add(std::make_shared<Quad>(glm::vec3(0, 0, 0), glm::vec3(555, 0, 0), glm::vec3(0, 0, 555), white));
     objtable.Add(std::make_shared<Quad>(glm::vec3(555, 555, 555), glm::vec3(0, 0, -555), glm::vec3(-555, 0, 0), white));// top
     objtable.Add(std::make_shared<Quad>(glm::vec3(0, 0, 555), glm::vec3(555, 0, 0), glm::vec3(0, 555, 0), white)); // back
@@ -170,35 +143,61 @@ std::shared_ptr<BVHnode> CornellBox(Camera& camera)
     box2->translate(glm::vec3(130, 0, 65));
     objtable.Add(box2);
 
+    _scene = std::make_shared<BVHnode>(objtable);
+
+    return _scene;
+}
+
+
+std::shared_ptr<BVHnode> EmitTestScene(Camera& camera)
+{
+    camera = Camera({ 278.0f, 278.0f, -800.0f }, { 278.0f, 278.0f, 0.0f }, { 0.0f, 1.0f, 0.0f },
+        (float)width, 1.0f,
+        40, 12.0f, 0.0f);
+
+    camera.sample_per_pixel = 20;
+
+    auto white = std::make_shared<Lambertian>(glm::vec3(.73, .73, .73));
+    auto light = std::make_shared<Emit>(white, glm::vec3(10, 10, 10));
+    auto Glass = std::make_shared<Dielectric>(glm::vec3{ 0.95f }, 1.1f, 0.02f);
+
+    ObjectTable objtable;
+
+    // objtable.Add(std::make_shared<Quad>(glm::vec3(343, 554, 300), glm::vec3(-130, 0, 0), glm::vec3(0, 0, -105), light));
+    objtable.Add(std::make_shared<Sphere>(light, glm::vec3(343, 400, 300), 50));
+    objtable.Add(std::make_shared<Sphere>(Glass, glm::vec3(343, 400, 300), 80));
+
+    // outer box
+    objtable.Add(std::make_shared<Quad>(glm::vec3(555, 0, 0), glm::vec3(0, 0, 555), glm::vec3(0, 555, 0), white));
+    objtable.Add(std::make_shared<Quad>(glm::vec3(0, 0, 0), glm::vec3(0, 555, 0), glm::vec3(0, 0, 555), white));
+
+    objtable.Add(std::make_shared<Quad>(glm::vec3(0, 0, 0), glm::vec3(555, 0, 0), glm::vec3(0, 0, 555), white));
+    objtable.Add(std::make_shared<Quad>(glm::vec3(555, 555, 555), glm::vec3(0, 0, -555), glm::vec3(-555, 0, 0), white));// top
+    objtable.Add(std::make_shared<Quad>(glm::vec3(0, 0, 555), glm::vec3(555, 0, 0), glm::vec3(0, 555, 0), white)); // back
+
+    std::shared_ptr<Box> box2 = std::make_shared<Box>(glm::vec3(0, 0, 0), glm::vec3(165, 165, 165), white);
+    box2->rotateY(-45.0f);
+    box2->translate(glm::vec3(130, 0, 65));
+    objtable.Add(box2);
 
     std::shared_ptr<BVHnode> bvh = std::make_shared<BVHnode>(objtable);
     return bvh;
 }
 
+// rendering main function
 
 int main() {
-    Picture* pic = new Picture(width, height, 4);
 
     Camera camera;
+    std::shared_ptr<BVHnode> scene;
+    ObjectTable lights;
 
-    auto bvh = CornellBox(camera);
+    auto res = CornellBox(camera, scene, lights);
 
-    // Shading every pixel
-    for (int x = 0; x < width; ++x) {
-        for (int y = 0; y < height; ++y)
-        {
-            glm::vec3 colorbuffer(0.0f);
-            for (int k = 0; k < camera.sample_per_pixel; k++)
-            {
-                HitRecord rec;
-                Ray ray = camera.GetPerspectiveRay(-1.0f + 2.0f * (x + Utility::RandomFloat()) / width, -1.0f + 2.0f * (y + Utility::RandomFloat()) / height);
-                colorbuffer += shading(ray, rec, 0, bvh, camera);
-            }
-            // output pixel
-            pic->modify(x, y, Utility::clamp(colorbuffer / (float)camera.sample_per_pixel, 0.0f, 1.0f));
-            std::cout << (y + 1) + x * height << " / " << width * height << " has been rendered!" << "  processing : " << (float)(((y + 1) + x * height) / (width * height)) * 100.0f << "%" << std::endl;
-        }
-    }
-    pic->output("assets/output/output.png");
+    Renderer renderer(width, height, channel, camera, scene, lights);
     
+    renderer.SetShadingDepth(max_depth);
+    renderer.SetSampleperPixel(simple_per_pixel);
+
+    renderer.Render();
 }

@@ -11,6 +11,11 @@ class Object
 public:
 	virtual bool Hit(const Ray& ray, Interval ray_t, HitRecord& rec) const = 0;
 	virtual AABB GetBB() const = 0;
+
+	// pdf interface
+	virtual float pdf_value(const glm::vec3& origin, const glm::vec3& direction) const { return 0.0f; }
+	virtual glm::vec3 random(const glm::vec3& origin) const { return glm::vec3(1, 0, 0); }
+
 };
 
 class ObjectTable
@@ -66,19 +71,24 @@ class Quad : public Object
 public:
 	Quad(std::shared_ptr<Material> mat, const glm::vec3& origin = { 0.0f, 0.0f , 0.0f }, const glm::vec3& u = { 0.0f, 0.0f , 0.0f }, const glm::vec3& v = { 0.0f, 0.0f , 0.0f });
 	Quad(const glm::vec3& origin, const glm::vec3& u, const glm::vec3& v, std::shared_ptr<Material> mat);
+	
 	virtual bool Hit(const Ray& ray, Interval ray_t, HitRecord& rec) const override;
 	virtual AABB GetBB() const override { return m_BoundingBox; }
+
+	virtual float pdf_value(const glm::vec3& origin, const glm::vec3& direction) const override;
+	virtual glm::vec3 random(const glm::vec3& origin) const override;
 
 private:
 	glm::vec3 m_Origin;
 	glm::vec3 m_U;
 	glm::vec3 m_V;
 
-	glm::vec3 w;
+	glm::vec3 w; // used for ca
 
 	// quad plane attributes 
 	glm::vec3 m_Normal;
 	float m_D;
+	float area;
 
 	std::shared_ptr<Material> m_Material;
 

@@ -4,7 +4,7 @@ Lambertian::Lambertian(glm::vec3 albedo)
 	:albedo(albedo)
 {}
 
-bool Lambertian::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray& newray)
+bool Lambertian::scatter(const Ray& ray, HitRecord& rec, glm::vec3& alb, Ray& scatteredray, float& pdf)
 {
 	if (!rec.front_face)
 	{
@@ -14,16 +14,21 @@ bool Lambertian::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation,
 	{
 		if (tex != nullptr)
 		{
-			attenuation = tex->GetValue(rec.u, rec.v, rec.position);
+			alb = tex->GetValue(rec.u, rec.v, rec.position);
 		}
 		else
 		{
-			attenuation = albedo;
+			alb = albedo;
 		}
+
+		ONB uvw;
+		uvw.build_from_w(rec.normal);
+		glm::vec3 scatter_direction = uvw.local(Utility::RandomCosDir());
 		glm::vec3 newdir;
 		do { newdir = Utility::RandomUnitVector(); } while (glm::dot(newdir, rec.normal) < 0);
-		newray.SetOrigin(rec.position + 0.0001f * rec.normal);
-		newray.SetDir(glm::normalize(newdir + rec.normal));
+		scatteredray.SetOrigin(rec.position + 0.0001f * rec.normal);
+		scatteredray.SetDir(glm::normalize(newdir + rec.normal));
+		float pdf = glm::dot(uvw.w(), scatteredray.GetDir()) / Utility::pi;
 		return true;
 	}
 	else
@@ -33,11 +38,17 @@ bool Lambertian::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation,
 	
 }
 
+float Lambertian::scatter_pdf(const Ray& ray, HitRecord& rec, Ray& scatteredray) const
+{
+	auto cos_theta = glm::dot(rec.normal, glm::normalize(scatteredray.GetDir()));
+	return cos_theta < 0 ? 0 : cos_theta / Utility::pi;
+}
+
 Metal::Metal(glm::vec3 albedo, float fuzziness)
 	:albedo(albedo), fuzziness(fuzziness)
 {}
 
-bool Metal::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray& newray)
+bool Metal::scatter(const Ray& ray, HitRecord& rec, glm::vec3& alb, Ray& scatteredray, float& pdf)
 {
 	if (!rec.front_face)
 	{
@@ -46,17 +57,17 @@ bool Metal::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray&
 
 	if (tex != nullptr)
 	{
-		attenuation = tex->GetValue(rec.u, rec.v, rec.position);
+		alb = tex->GetValue(rec.u, rec.v, rec.position);
 	}
 	else
 	{
-		attenuation = albedo;
+		alb = albedo;
 	}
 
-	newray.SetOrigin(rec.position + 0.0001f * rec.normal);
+	scatteredray.SetOrigin(rec.position + 0.0001f * rec.normal);
 	glm::vec3 newdir = ray.GetDir() - 2.0f * glm::dot(rec.normal, ray.GetDir()) * rec.normal;
 	newdir = glm::normalize(fuzziness * Utility::RandomUnitVector() + newdir);
-	newray.SetDir(newdir);
+	scatteredray.SetDir(newdir);
 	return true;
 }
 
@@ -66,15 +77,15 @@ Dielectric::Dielectric(glm::vec3 albedo, float refraction, float fuzziness)
 	;
 }
 
-bool Dielectric::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray& newray)
+bool Dielectric::scatter(const Ray& ray, HitRecord& rec, glm::vec3& alb, Ray& scatteredray, float& pdf)
 {
 	if (tex != nullptr)
 	{
-		attenuation = tex->GetValue(rec.u, rec.v, rec.position);
+		alb = tex->GetValue(rec.u, rec.v, rec.position);
 	}
 	else
 	{
-		attenuation = albedo;
+		alb = albedo;
 	}
 	float refraction_ratio;
 	float cos_theta;
@@ -99,15 +110,15 @@ bool Dielectric::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation,
 		{
 			glm::vec3 newdir = glm::reflect(ray.GetDir(), rec.normal);
 			newdir = glm::normalize(fuzziness * Utility::RandomUnitVector() + newdir);
-			newray.SetDir(newdir);
-			newray.SetOrigin(rec.position + 0.0001f * rec.normal);
+			scatteredray.SetDir(newdir);
+			scatteredray.SetOrigin(rec.position + 0.0001f * rec.normal);
 		}
 		else
 		{
 			glm::vec3 newdir = glm::reflect(ray.GetDir(), -rec.normal);
 			newdir = glm::normalize(fuzziness * Utility::RandomUnitVector() + newdir);
-			newray.SetDir(newdir);
-			newray.SetOrigin(rec.position - 0.0001f * rec.normal);
+			scatteredray.SetDir(newdir);
+			scatteredray.SetOrigin(rec.position - 0.0001f * rec.normal);
 		}
 	}
 	else
@@ -115,15 +126,15 @@ bool Dielectric::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation,
 		glm::vec3 newdir;
 		if (rec.front_face)
 		{
-			newray.SetOrigin(rec.position - 0.0001f * rec.normal);
+			scatteredray.SetOrigin(rec.position - 0.0001f * rec.normal);
 			newdir = glm::normalize(glm::refract(ray.GetDir(), rec.normal, refraction_ratio) + fuzziness * Utility::RandomUnitVector());
 		}
 		else
 		{
-			newray.SetOrigin(rec.position + 0.0001f * rec.normal);
+			scatteredray.SetOrigin(rec.position + 0.0001f * rec.normal);
 			newdir = glm::normalize(glm::refract(ray.GetDir(), -rec.normal, refraction_ratio) + fuzziness * Utility::RandomUnitVector());
 		}
-		newray.SetDir(newdir);
+		scatteredray.SetDir(newdir);
 	}
 
 	return true;
@@ -147,7 +158,22 @@ glm::vec3 Emit::emitted(float u, float v, const glm::vec3& pos) const
 	return Emitalbedo;
 }
 
-bool Emit::scatter(const Ray& ray, HitRecord& rec, glm::vec3& attenuation, Ray& newray)
+bool Emit::scatter(const Ray& ray, HitRecord& rec, glm::vec3& alb, Ray& scatteredray, float& pdf)
 {
-	return m_SurfaceMat->scatter(ray, rec, attenuation, newray);
+	return m_SurfaceMat->scatter(ray, rec, alb, scatteredray, pdf);
+}
+
+Isotropic::Isotropic(glm::vec3 albedo)
+{
+	this->albedo = albedo;
+}
+
+bool Isotropic::scatter(const Ray& ray, HitRecord& rec, glm::vec3& alb, Ray& scatteredray, float& pdf)
+{
+	return false;
+}
+
+float Isotropic::scatter_pdf(const Ray& ray, HitRecord& rec, Ray& scatteredray) const
+{
+	return 0.0f;
 }

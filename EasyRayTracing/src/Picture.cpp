@@ -34,3 +34,8 @@ int Picture::output(const std::string& path)
 	return stbi_write_png(path.c_str(), m_Width, m_Height, m_Channel, data, 0);
 }
 
+std::pair<unsigned int, unsigned int> Picture::size()
+{
+	return std::pair<unsigned int, unsigned int>(m_Width, m_Height);
+}
+
