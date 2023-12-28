@@ -58,14 +58,14 @@ glm::vec3 Renderer::shading(Ray ray, HitRecord& rec, int depth)
         if (rec.mat_ptr->scatter(ray, rec, attenuation, scatteredray, pdf_val))
         {
             // lightpdf
-            //ObjectPDF light_pdf = ObjectPDF(m_Lights.GetTable()[0], rec.position);
-            //scatteredray = Ray(rec.position, light_pdf.generate());
-            //pdf_val = light_pdf.value(scatteredray.GetDir());
+            ObjectPDF light_pdf = ObjectPDF(m_Lights.GetTable()[0], rec.position);
+            scatteredray = Ray(rec.position, light_pdf.generate());
+            pdf_val = light_pdf.value(scatteredray.GetDir());
 
             // cospdf
-            CosinePDF surface_pdf(rec.normal);
-            scatteredray = Ray(rec.position, surface_pdf.generate());
-            pdf_val = surface_pdf.value(scatteredray.GetDir());
+            //CosinePDF surface_pdf(rec.normal);
+            //scatteredray = Ray(rec.position, surface_pdf.generate());
+            //pdf_val = surface_pdf.value(scatteredray.GetDir());
 
             float scattering_pdf = rec.mat_ptr->scatter_pdf(ray, rec, scatteredray);
             rec.reset();

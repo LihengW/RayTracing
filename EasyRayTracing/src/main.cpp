@@ -124,8 +124,10 @@ std::shared_ptr<BVHnode> CornellBox(Camera& _camera, std::shared_ptr<BVHnode>& _
     ObjectTable objtable;
 
     // outer box
+    //light
     _light.Add(std::make_shared<Quad>(glm::vec3(343, 554, 300), glm::vec3(-130, 0, 0), glm::vec3(0, 0, -105), light));
-    
+    objtable.Add(std::make_shared<Quad>(glm::vec3(343, 554, 300), glm::vec3(-130, 0, 0), glm::vec3(0, 0, -105), light));
+
     objtable.Add(std::make_shared<Quad>(glm::vec3(555, 0, 0), glm::vec3(0, 0, 555), glm::vec3(0, 555, 0), green));
     objtable.Add(std::make_shared<Quad>(glm::vec3(0, 0, 0), glm::vec3(0, 555, 0), glm::vec3(0, 0, 555), red));
     objtable.Add(std::make_shared<Quad>(glm::vec3(0, 0, 0), glm::vec3(555, 0, 0), glm::vec3(0, 0, 555), white));
