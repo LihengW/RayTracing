@@ -6,36 +6,24 @@ Lambertian::Lambertian(glm::vec3 albedo)
 
 bool Lambertian::scatter(const Ray& ray, HitRecord& rec, glm::vec3& alb, Ray& scatteredray, float& pdf)
 {
-	if (!rec.front_face)
+	if (tex != nullptr)
 	{
-		return false;
-	}
-	if (Utility::RandomFloat() <= scatter_rate)
-	{
-		if (tex != nullptr)
-		{
-			alb = tex->GetValue(rec.u, rec.v, rec.position);
-		}
-		else
-		{
-			alb = albedo;
-		}
-
-		ONB uvw;
-		uvw.build_from_w(rec.normal);
-		glm::vec3 scatter_direction = uvw.local(Utility::RandomCosDir());
-		glm::vec3 newdir;
-		do { newdir = Utility::RandomUnitVector(); } while (glm::dot(newdir, rec.normal) < 0);
-		scatteredray.SetOrigin(rec.position + 0.0001f * rec.normal);
-		scatteredray.SetDir(glm::normalize(newdir + rec.normal));
-		float pdf = glm::dot(uvw.w(), scatteredray.GetDir()) / Utility::pi;
-		return true;
+		alb = tex->GetValue(rec.u, rec.v, rec.position);
 	}
 	else
 	{
-		return false;
+		alb = albedo;
 	}
-	
+
+	ONB uvw;
+	uvw.build_from_w(rec.normal);
+	glm::vec3 scatter_direction = uvw.local(Utility::RandomCosDir());
+	glm::vec3 newdir;
+	do { newdir = Utility::RandomUnitVector(); } while (glm::dot(newdir, rec.normal) < 0);
+	scatteredray.SetOrigin(rec.position + 0.0001f * rec.normal);
+	scatteredray.SetDir(glm::normalize(newdir + rec.normal));
+	pdf = glm::dot(uvw.w(), scatteredray.GetDir()) / Utility::pi;
+	return true;
 }
 
 float Lambertian::scatter_pdf(const Ray& ray, HitRecord& rec, Ray& scatteredray) const
@@ -153,14 +141,26 @@ Emit::Emit(std::shared_ptr<Material> mat, glm::vec3 Emitalbedo)
 	;
 }
 
-glm::vec3 Emit::emitted(float u, float v, const glm::vec3& pos) const
+glm::vec3 Emit::emitted(const HitRecord& rec) const
 {
-	return Emitalbedo;
+	if (rec.front_face)
+	{
+		return this->Emitalbedo;
+	}
+	else
+	{
+		return glm::vec3{ 0.0f };
+	}
 }
 
 bool Emit::scatter(const Ray& ray, HitRecord& rec, glm::vec3& alb, Ray& scatteredray, float& pdf)
 {
 	return m_SurfaceMat->scatter(ray, rec, alb, scatteredray, pdf);
+}
+
+float Emit::scatter_pdf(const Ray& ray, HitRecord& rec, Ray& scatteredray) const
+{
+	return this->GetInnerMat()->scatter_pdf(ray, rec, scatteredray);
 }
 
 Isotropic::Isotropic(glm::vec3 albedo)

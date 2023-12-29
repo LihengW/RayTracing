@@ -53,24 +53,29 @@ glm::vec3 Renderer::shading(Ray ray, HitRecord& rec, int depth)
         float pdf_val;
         Ray scatteredray;
 
-        glm::vec3 emit = rec.mat_ptr->emitted(rec.u, rec.v, rec.position);
+        glm::vec3 emit = rec.mat_ptr->emitted(rec);
 
         if (rec.mat_ptr->scatter(ray, rec, attenuation, scatteredray, pdf_val))
         {
             // lightpdf
-            ObjectPDF light_pdf = ObjectPDF(m_Lights.GetTable()[0], rec.position);
-            scatteredray = Ray(rec.position, light_pdf.generate());
-            pdf_val = light_pdf.value(scatteredray.GetDir());
+            std::shared_ptr<ObjectPDF> light_pdf = std::make_shared<ObjectPDF>(m_Lights.GetTable()[0], rec.position);
 
             // cospdf
-            //CosinePDF surface_pdf(rec.normal);
-            //scatteredray = Ray(rec.position, surface_pdf.generate());
-            //pdf_val = surface_pdf.value(scatteredray.GetDir());
+            std::shared_ptr<CosinePDF> surface_pdf = std::make_shared<CosinePDF>(rec.normal);
+
+            // mixed pdf
+            std::shared_ptr<MixturePDF> mixed_pdf = std::make_shared<MixturePDF>(light_pdf, surface_pdf);
+            scatteredray = Ray(rec.position, mixed_pdf->generate());
+            pdf_val = mixed_pdf->value(scatteredray.GetDir());
 
             float scattering_pdf = rec.mat_ptr->scatter_pdf(ray, rec, scatteredray);
             rec.reset();
 
-            glm::vec3 scatteredcolor = (attenuation * scattering_pdf * shading(scatteredray, rec, depth + 1)) / pdf_val;
+            glm::vec3 scatteredcolor = (attenuation * scattering_pdf * shading(scatteredray, rec, depth + 1));
+            if (glm::dot(scatteredcolor, scatteredcolor) > 0 && pdf_val > 0)
+            {
+                scatteredcolor = scatteredcolor / pdf_val;
+            }
             return emit + scatteredcolor;
             // return attenuation * pow(1.0f / 2.0f, (float)depth) * shading(next_ray, rec, depth + 1, objtable);
         }

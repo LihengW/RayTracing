@@ -4,6 +4,16 @@
 #include "Objects.h"
 #include "Texture.h"
 
+class ScatterRecord {
+	// Recording the result of scattering
+public:
+	glm::vec3 attenuation;
+	std::shared_ptr<PDF> pdf_ptr;
+	bool skip_pdf;
+	Ray skipped_pdf_ray;
+};
+
+
 class Material
 {
 public:
@@ -14,7 +24,7 @@ public:
 
 	virtual std::shared_ptr<Texture> GetTex() const = 0;
 	virtual void BindTex(std::shared_ptr<Texture> _tex) = 0;
-	virtual glm::vec3 emitted(float u, float v, const glm::vec3& pos) const = 0;
+	virtual glm::vec3 emitted(const HitRecord& rec) const = 0;
 
 private:
 	std::shared_ptr<Texture> tex;
@@ -31,7 +41,7 @@ public:
 
 	virtual std::shared_ptr<Texture> GetTex() const override { return tex; }
 	virtual void BindTex(std::shared_ptr<Texture> _tex) override { tex = _tex; }
-	virtual glm::vec3 emitted(float u, float v, const glm::vec3& pos) const override { return glm::vec3{ 0.0f }; }
+	virtual glm::vec3 emitted(const HitRecord& rec) const override { return glm::vec3{ 0.0f }; }
 
 private:
 	glm::vec3 albedo;
@@ -51,7 +61,7 @@ public:
 	virtual std::shared_ptr<Texture> GetTex() const override { return tex; }
 	virtual void BindTex(std::shared_ptr<Texture> _tex) override { tex = _tex; }
 
-	virtual glm::vec3 emitted(float u, float v, const glm::vec3& pos) const override { return glm::vec3{ 0.0f }; }
+	virtual glm::vec3 emitted(const HitRecord& rec) const override { return glm::vec3{ 0.0f }; }
 
 private:
 	glm::vec3 albedo;
@@ -70,7 +80,7 @@ public:
 	virtual std::shared_ptr<Texture> GetTex() const override { return tex; }
 	virtual void BindTex(std::shared_ptr<Texture> _tex) override { tex = _tex; }
 
-	virtual glm::vec3 emitted(float u, float v, const glm::vec3& pos) const override { return glm::vec3{ 0.0f }; }
+	virtual glm::vec3 emitted(const HitRecord& rec) const override { return glm::vec3{ 0.0f }; }
 
 	static float reflectance(float cosine, float ref_ratio);
 
@@ -87,12 +97,13 @@ public:
 	Emit(std::shared_ptr<Material> mat, glm::vec3 Emitalbedo = {1.0f, 1.0f, 1.0f});
 
 	virtual bool scatter(const Ray& ray, HitRecord& rec, glm::vec3& alb, Ray& scatteredray, float& pdf) override;
+	virtual float scatter_pdf(const Ray& ray, HitRecord& rec, Ray& scatteredray) const override;
 	virtual glm::vec3& GetAlbedo() override { return Emitalbedo; }
 
 	virtual std::shared_ptr<Texture> GetTex() const override { return tex; }
 	virtual void BindTex(std::shared_ptr<Texture> _tex) override { tex = _tex; }
 
-	virtual glm::vec3 emitted(float u, float v, const glm::vec3& pos) const override;
+	virtual glm::vec3 emitted(const HitRecord& rec) const override;
 	std::shared_ptr<Material> GetInnerMat() const { return m_SurfaceMat; }
 private:
 	glm::vec3 Emitalbedo;
@@ -113,7 +124,7 @@ public:
 
 	virtual std::shared_ptr<Texture> GetTex() const override { return tex; }
 	virtual void BindTex(std::shared_ptr<Texture> _tex) override { tex = _tex; }
-	virtual glm::vec3 emitted(float u, float v, const glm::vec3& pos) const override { return glm::vec3{ 0.0f }; }
+	virtual glm::vec3 emitted(const HitRecord& rec) const override { return glm::vec3{ 0.0f }; }
 
 private:
 	glm::vec3 albedo;

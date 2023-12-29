@@ -54,10 +54,12 @@ public:
     {}
 
     float value(const glm::vec3& direction) const override {
+        // need to be fixed
         return std::dynamic_pointer_cast<Quad>(object_ptr)->pdf_value(origin, direction);
     }
 
     glm::vec3 generate() const override {
+        // need to be fixed
         return std::dynamic_pointer_cast<Quad>(object_ptr)->random(origin);
     }
     
@@ -65,4 +67,32 @@ public:
 private:
     const std::shared_ptr<Object>& object_ptr;
     glm::vec3 origin;
+};
+
+class MixturePDF : public PDF {
+public:
+    MixturePDF(std::shared_ptr<PDF> pdf_ptr1, std::shared_ptr<PDF> pdf_ptr2)
+    {
+        pdfs[0] = pdf_ptr1;
+        pdfs[1] = pdf_ptr2;
+    }
+
+    float value(const glm::vec3& direction) const override {
+        return 0.5f * pdfs[0]->value(direction) + 0.5f * pdfs[1]->value(direction);
+    }
+
+    glm::vec3 generate() const override {
+        if (Utility::RandomFloat() > 0.5f)
+        {
+            return pdfs[0]->generate();
+        }
+        else
+        {
+            return pdfs[1]->generate();
+        }
+    }
+
+
+private:
+    std::shared_ptr<PDF> pdfs[2];
 };

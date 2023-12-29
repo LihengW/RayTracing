@@ -2,13 +2,13 @@
 
 // Scene & Rendering Configurations
 
-static int width = 600;
+static int width = 800;
 static float aspectRatio = 1.0f;
 static int height = (int)(width * aspectRatio);
 static int channel = 4;
 
 static int max_depth = 50;
-static int simple_per_pixel = 10;
+static int simple_per_pixel = 100;
 
 // Scenes
 
@@ -119,7 +119,7 @@ std::shared_ptr<BVHnode> CornellBox(Camera& _camera, std::shared_ptr<BVHnode>& _
     auto red =   std::make_shared<Lambertian>(glm::vec3(.65, .05, .05));
     auto white = std::make_shared<Lambertian>(glm::vec3(.73, .73, .73));
     auto green = std::make_shared<Lambertian>(glm::vec3(.12, .65, .15));
-    auto light = std::make_shared<Emit>(white, glm::vec3(25, 25, 25));
+    auto light = std::make_shared<Emit>(white, glm::vec3(15.0f, 15.0f, 15.0f));
 
     ObjectTable objtable;
 

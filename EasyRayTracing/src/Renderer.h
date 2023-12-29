@@ -33,7 +33,7 @@ private:
 	int shading_depth = 20;
 
 	std::unique_ptr<Picture> m_Picture;
-	int sample_per_pixel = 50;
+	int sample_per_pixel = 10;
 
 	Camera m_Camera;
 	

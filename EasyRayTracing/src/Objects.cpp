@@ -130,7 +130,7 @@ Quad::Quad(std::shared_ptr<Material> mat, const glm::vec3& origin, const glm::ve
     m_BoundingBox = AABB(origin, origin+u+v).Pad();
 
     glm::vec3 n = glm::cross(u, v);
-    area = n.length();
+    area = glm::sqrt(glm::dot(n, n));
     m_Normal = glm::normalize(n);  // we assume the normal is pointing the outside of the quad
     m_D = glm::dot(m_Normal, m_Origin);
     w = n / glm::dot(n, n);
@@ -142,7 +142,7 @@ Quad::Quad(const glm::vec3& origin, const glm::vec3& u, const glm::vec3& v, std:
     m_BoundingBox = AABB(origin, origin + u + v).Pad();
 
     glm::vec3 n = glm::cross(u, v);
-    area = n.length();
+    area = glm::sqrt(glm::dot(n, n));
     m_Normal = glm::normalize(n);  // we assume the normal is pointing the outside of the quad
     m_D = glm::dot(m_Normal, m_Origin);
     w = n / glm::dot(n, n);
@@ -188,11 +188,11 @@ bool Quad::Hit(const Ray& ray, Interval ray_t, HitRecord& rec) const
 float Quad::pdf_value(const glm::vec3& origin, const glm::vec3& direction) const
 {
     HitRecord rec;
-    if (this->Hit(Ray(origin, direction), Interval(0.001f, Utility::FLOAT_MAX), rec)) // don't hit the object
+    if (!this->Hit(Ray(origin, direction), Interval(0.001f, Utility::FLOAT_MAX), rec)) // don't hit the object
         return 0;
 
-    float distance_squared = rec.t * rec.t * direction.length() * direction.length();
-    float cosine = fabsf(glm::dot(direction, rec.normal) / direction.length());
+    float distance_squared = rec.t * rec.t * glm::dot(direction, direction);
+    float cosine = fabsf(glm::dot(direction, rec.normal) / glm::sqrt(glm::dot(direction, direction)));
 
     return distance_squared / (cosine * area);
 }
